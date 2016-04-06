@@ -1,0 +1,19 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "System",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "removeComments": true,
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "mapRoot": "map/",
+    "diagnostics": true
+  },
+  "exclude": [
+    "node_modules",
+    "typings"
+  ]
+}
