@@ -5,15 +5,16 @@ module.exports = function (config) {
         basePath: '.',
 
         files: [
-            // paths loaded via Angular's component compiler (these paths will be rewritten, see proxies section)
-            {pattern: 'app/**/*.html', included: false},
-            {pattern: 'app/**/*.css', included: false},
-
             // paths loaded by Karma
+            'node_modules/systemjs/dist/system-polyfills.js',
+            'node_modules/es6-shim/es6-shim.min.js',
+            'node_modules/angular2/es6/dev/src/testing/shims_for_IE.js',
             'node_modules/angular2/bundles/angular2-polyfills.js',
             'node_modules/systemjs/dist/system.src.js',
             'node_modules/rxjs/bundles/Rx.js',
             'node_modules/angular2/bundles/angular2.dev.js',
+            'node_modules/angular2/bundles/router.dev.js',
+            'node_modules/angular2/bundles/http.js',
             'node_modules/angular2/bundles/testing.dev.js',
 
             // shim
