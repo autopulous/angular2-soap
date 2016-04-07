@@ -16,6 +16,8 @@ module.exports = function (config) {
             'node_modules/angular2/bundles/router.dev.js',
             'node_modules/angular2/bundles/http.js',
             'node_modules/angular2/bundles/testing.dev.js',
+            'node_modules/autopulous-xdom/xdom.js',
+            'node_modules/autopulous-xdom2jso/xdom2jso.js',
 
             // shim
             'app/karma.angular2.shim.js',
