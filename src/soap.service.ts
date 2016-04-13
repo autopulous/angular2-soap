@@ -3,100 +3,120 @@
 
 import convert = xdom2jso.convert;
 
-import {Injectable, Output, EventEmitter} from 'angular2/core';
+import {Injectable} from 'angular2/core';
 
 @Injectable()
 export class SoapService {
-    @Output() SoapResponseEvent:EventEmitter<{}> = new EventEmitter(true);
-
     private debug:boolean = false;
+    private asynchronous:boolean = false;
+    private localName:boolean = false;
 
-    private username:string = '';
-    private password:string = '';
+    private servicePort:string = '';
+    private servicePath:string = '';
+    private serviceUrl:string = '';
 
     private targetNamespace:string = '';
 
-    private servicePort:number = 0;
-    private serviceRoot:string = '';
+    private envelopeBuilder_:(requestBody:string) => string = null;
+    private xmlResponseHandler_:(response:NodeListOf<Element>) => void = null;
+    private jsoResponseHandler_:(response:{}) => void = null;
 
-    private serviceUrl:string = '';
+    constructor(servicePort:string, servicePath:string, targetNamespace?:string) {
+        this.servicePort = servicePort;
+        this.servicePath = servicePath;
+        this.serviceUrl = servicePort + servicePath;
 
-    private requestSuffix:string = "Request";
-    private responseSuffix:string = "Response";
-
-    constructor(servicePort:number, serviceRoot:string, targetNamespace?:string, requestSuffix?:string, responseSuffix?:string) {
         if (undefined !== targetNamespace) this.targetNamespace = targetNamespace;
-
-        this.setEndpoint(servicePort, serviceRoot);
-        this.setMethodSuffixes(requestSuffix, responseSuffix);
     }
 
-    public setEndpoint(servicePort:number, serviceRoot:string) {
-        this.servicePort = servicePort;
-        this.serviceRoot = serviceRoot;
-        this.serviceUrl = this.servicePort + this.serviceRoot;
-    };
+    set envelopeBuilder(envelopeBuilder:(response:{}) => string) {
+        this.envelopeBuilder_ = envelopeBuilder;
+    }
 
-    public setMethodSuffixes(requestSuffix?:string, responseSuffix?:string) {
-        if (undefined !== requestSuffix) this.requestSuffix = requestSuffix;
-        if (undefined !== responseSuffix) this.responseSuffix = responseSuffix;
-    };
+    set jsoResponseHandler(responseHandler:(response:{}) => void) {
+        this.jsoResponseHandler_ = responseHandler;
+    }
 
-    public setCredentials(username:string, password:string) {
-        this.username = username;
-        this.password = password;
-    };
+    set xmlResponseHandler(responseHandler:(response:NodeListOf<Element>) => void) {
+        this.xmlResponseHandler_ = responseHandler;
+    }
 
-    public setMode(debug:boolean) {
-        this.debug = debug;
-    };
+    set localNameMode(on:boolean) {
+        this.localName = on;
+    }
 
-    public post(method:string, parameters:any):void {
-        var soapAction:string = this.targetNamespace + '/' + encodeURIComponent(method);
+    set debugMode(on:boolean) {
+        this.debug = on;
+    }
+
+    set testMode(on:boolean) {
+        this.debug = on;
+        this.asynchronous = !on;
+    }
+
+    public post(method:string, parameters:any, responseRoot?:string):void {
+        var request:string = this.toXml(parameters);
+        var envelopedRequest:string = null != this.envelopeBuilder_ ? this.envelopeBuilder_(request) : request;
+
+        if (this.debug) {
+            console.log('target namespace: ' + this.targetNamespace);
+            console.log('method: ' + method);
+            console.log('service URL: ' + this.serviceUrl);
+            console.log('request: ' + request);
+            console.log('envelopedRequest: ' + envelopedRequest);
+            console.log((this.asynchronous ? 'asynchronous' : 'synchronous') + ' ' + (this.localName ? 'without namespaces' : 'with namespaces (if returned by the webservice)'));
+        }
 
         var xmlHttp:XMLHttpRequest = new XMLHttpRequest();
 
-        xmlHttp.open("POST", this.serviceUrl, true);
-
-        xmlHttp.setRequestHeader("SOAPAction", soapAction);
-        xmlHttp.setRequestHeader("Content-Type", "text/xml; charset=utf-8");
-
         xmlHttp.onreadystatechange = () => {
+            if (this.debug) {
+                console.log('XMLHttpRequest ready state: ' + xmlHttp.readyState);
+            }
+
             if (4 == xmlHttp.readyState) {
-                var responseNodeList:any = xmlHttp.responseXML.getElementsByTagNameNS('*', method + this.responseSuffix);
+                if (this.debug) {
+                    console.log('XMLHttpRequest status: ' + xmlHttp.status);
+                    console.log('XMLHttpRequest status text: ' + xmlHttp.statusText);
+                    console.log('XMLHttpRequest response headers: ' + xmlHttp.getAllResponseHeaders());
+                }
 
-                var jso:{} = convert(responseNodeList[0]);
+                var responseNodeList:NodeListOf<Element>;
 
-                this.SoapResponseEvent.emit(jso);
+                if (undefined === responseRoot) {
+                    responseNodeList = xmlHttp.responseXML;
+                }
+                else {
+                    responseNodeList = xmlHttp.responseXML.getElementsByTagNameNS('*', responseRoot);
+                }
+
+                if (null != this.xmlResponseHandler_) {
+                    this.xmlResponseHandler_(responseNodeList);
+                }
+
+                if (null != this.jsoResponseHandler_) {
+                    var response:{} = convert(responseNodeList[0]);
+
+                    if (this.debug) {
+                        console.log(JSON.stringify(response));
+                    }
+
+                    this.jsoResponseHandler_(response);
+                }
             }
         };
 
-        var requestBody:string = this.toXml(parameters);
+        xmlHttp.open("POST", this.serviceUrl, this.asynchronous);
 
-        //
-        // Replace the SOAP-ENV as needed for the webservices that you are invoking
-        //
+        xmlHttp.setRequestHeader("SOAPAction", this.targetNamespace + '/' + encodeURIComponent(method));
+        xmlHttp.setRequestHeader("Content-Type", "text/xml; charset=utf-8");
 
-        var request:string =
-            "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-            "<SOAP-ENV:Header>" +
-            "<wsse:Security SOAP-ENV:mustUnderstand=\"1\" xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" soapenv =\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-            "<wsse:UsernameToken wsu:ld=\"UsernameToken-104\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" >" +
-            "<wsse:Username>" + this.username + "</wsse:Username>" +
-            "<wsse:Password Type=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText\">" + this.password + "</wsse:Password>" +
-            "</wsse:UsernameToken>" +
-            "</wsse:Security>" +
-            "</SOAP-ENV:Header>" +
-            "<SOAP-ENV:Body>" +
-            requestBody +
-            "</SOAP-ENV:Body>" +
-            "</SOAP-ENV:Envelope>";
-
-        xmlHttp.send(request);
+        xmlHttp.send(envelopedRequest);
     }
 
-    private toXml(parameters:any):string {
+    private toXml(parameters):string {
         var xml:string = "";
+        var parameter:any;
 
         switch (typeof(parameters)) {
             case "string":
@@ -109,46 +129,34 @@ export class SoapService {
                 break;
 
             case "object":
-                if (parameters.constructor.toString().indexOf("function Date()") > -1) { // Date
-                    var year:string = parameters.getFullYear().toString();
+                if (parameters.constructor.toString().indexOf("function Date()") > -1) {
+                    let year:string = parameters.getFullYear().toString();
+                    let month:string = ("0" + (parameters.getMonth() + 1).toString()).slice(-2);
+                    let date:string = ("0" + parameters.getDate().toString()).slice(-2);
+                    let hours:string = ("0" + parameters.getHours().toString()).slice(-2);
+                    let minutes:string = ("0" + parameters.getMinutes().toString()).slice(-2);
+                    let seconds:string = ("0" + parameters.getSeconds().toString()).slice(-2);
+                    let milliseconds:string = parameters.getMilliseconds().toString();
 
-                    var month:string = (parameters.getMonth() + 1).toString();
-                    month = (month.length == 1) ? "0" + month : month;
+                    let tzOffsetMinutes:number = Math.abs(parameters.getTimezoneOffset());
+                    let tzOffsetHours:number = 0;
 
-                    var date:string = parameters.getDate().toString();
-                    date = (date.length == 1) ? "0" + date : date;
-
-                    var hours:string = parameters.getHours().toString();
-                    hours = (hours.length == 1) ? "0" + hours : hours;
-
-                    var minutes:string = parameters.getMinutes().toString();
-                    minutes = (minutes.length == 1) ? "0" + minutes : minutes;
-
-                    var seconds:string = parameters.getSeconds().toString();
-                    seconds = (seconds.length == 1) ? "0" + seconds : seconds;
-
-                    var milliseconds:string = parameters.getMilliseconds().toString();
-
-                    var tzminutes:number = Math.abs(parameters.getTimezoneOffset());
-
-                    var tzhours:number = 0;
-
-                    while (tzminutes >= 60) {
-                        tzhours++;
-                        tzminutes -= 60;
+                    while (tzOffsetMinutes >= 60) {
+                        tzOffsetHours++;
+                        tzOffsetMinutes -= 60;
                     }
 
-                    var tzminute:string = (tzminutes.toString().length == 1) ? "0" + tzminutes.toString() : tzminutes.toString();
-                    var tzhour:string = (tzhours.toString().length == 1) ? "0" + tzhours.toString() : tzhours.toString();
+                    let tzMinutes:string = ("0" + tzOffsetMinutes.toString()).slice(-2);
+                    let tzHours:string = ("0" + tzOffsetHours.toString()).slice(-2);
 
-                    var timezone:string = ((parameters.getTimezoneOffset() < 0) ? "+" : "-") + tzhour + ":" + tzminute;
+                    let timezone:string = ((parameters.getTimezoneOffset() < 0) ? "-" : "+") + tzHours + ":" + tzMinutes;
 
                     xml += year + "-" + month + "-" + date + "T" + hours + ":" + minutes + ":" + seconds + "." + milliseconds + timezone;
                 }
                 else if (parameters.constructor.toString().indexOf("function Array()") > -1) { // Array
-                    for (var parameter in parameters) {
+                    for (parameter in parameters) {
                         if (parameters.hasOwnProperty(parameter)) {
-                            if (!isNaN(+parameter)) {  // linear array
+                            if (!isNaN(parameter)) {  // linear array
                                 (/function\s+(\w*)\s*\(/ig).exec(parameters[parameter].constructor.toString());
 
                                 var type = RegExp.$1;
@@ -172,14 +180,14 @@ export class SoapService {
                                 }
                                 xml += this.toElement(type, parameters[parameter]);
                             }
-                            else { // associative array
+                            else {    // associative array
                                 xml += this.toElement(parameter, parameters[parameter]);
                             }
                         }
                     }
                 }
                 else { // Object or custom function
-                    for (var parameter in parameters) {
+                    for (parameter in parameters) {
                         if (parameters.hasOwnProperty(parameter)) {
                             xml += this.toElement(parameter, parameters[parameter]);
                         }
@@ -188,16 +196,16 @@ export class SoapService {
                 break;
 
             default:
-                throw new Error("SOAP SERVICE: type '" + typeof(parameters) + "' is not supported");
+                throw new Error("SoapService error: type '" + typeof(parameters) + "' is not supported");
         }
 
         return xml;
     }
 
-    private toElement(elementName:string, parameters:any):string {
+    private toElement(elementName, parameters):string {
         var elementContent:string = this.toXml(parameters);
 
-        if ("" === elementContent) {
+        if ("" == elementContent) {
             return "<" + elementName + "/>";
         }
         else {
@@ -205,7 +213,7 @@ export class SoapService {
         }
     }
 
-    private static stripTagAttributes(parameter:string):string {
+    private static stripTagAttributes(parameter):string {
         var attributedParameter:string = parameter + ' ';
 
         return attributedParameter.slice(0, attributedParameter.indexOf(' '));

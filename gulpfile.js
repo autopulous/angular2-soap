@@ -85,7 +85,7 @@ gulp.task('compile-test-typescript', function () {
 });
 
 gulp.task('build-distribution', function () {
-    return gulp.src(['./src/package.json', './README.md', './app/**/*.js', './**/*.ts', '!./**/spec*.ts', '!./node_modules/', '!./node_modules/**', '!./typings/', '!./typings/**'])
+    return gulp.src(['./src/package.json', './README.md', './app/**/*.js', '!./app/karma.angular2.shim.js', './**/*.ts', '!./**/spec*.ts', '!./node_modules/', '!./node_modules/**', '!./typings/', '!./typings/**'])
         .pipe(gulp.dest('distro'));
 });
 
