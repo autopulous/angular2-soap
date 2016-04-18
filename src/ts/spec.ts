@@ -1,5 +1,5 @@
-/// <reference path="../node_modules/angular2/typings/browser.d.ts"/>
-/// <reference path="../typings/main/ambient/jasmine/jasmine.d.ts"/>
+/// <reference path="../../node_modules/angular2/typings/browser.d.ts"/>
+/// <reference path="../../typings/main/ambient/jasmine/jasmine.d.ts"/>
 
 import {it, describe, expect, beforeEach, beforeEachProviders, inject, injectAsync} from 'angular2/testing';
 

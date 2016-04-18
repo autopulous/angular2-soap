@@ -58,11 +58,11 @@ gulp.task('copy-test-javascript', function () {
 
 gulp.task('compile-typescript', function () {
     var typescript = require('gulp-typescript');
-    var typescriptCompiler = typescript({typescript: require('typescript')});
+    var typescriptCompiler = typescript({typescript: require('ntypescript')});
     var typescriptProject = typescript(typescript.createProject('tsconfig.json'));
     var sourcemaps = require('gulp-sourcemaps');
 
-    return gulp.src(['!./src/**/spec*.ts', './src/**/*.ts'])
+    return gulp.src(['!./src/ts/**/spec*.ts', './src/ts/**/*.ts'])
         .pipe(typescriptProject)
         .pipe(sourcemaps.init())
         .pipe(sourcemaps.write('../map/'))
@@ -73,10 +73,10 @@ gulp.task('compile-typescript', function () {
 gulp.task('compile-test-typescript', function () {
     var sourcemaps = require('gulp-sourcemaps');
     var typescript = require('gulp-typescript');
-    var typescriptCompiler = typescript({typescript: require('typescript')});
+    var typescriptCompiler = typescript({typescript: require('ntypescript')});
     var typescriptProject = typescript(typescript.createProject('tsconfig.json'));
 
-    return gulp.src('./src/**/spec*.ts')
+    return gulp.src('./src/ts/**/spec*.ts')
         .pipe(typescriptProject)
         .pipe(sourcemaps.init())
         .pipe(sourcemaps.write('../map/'))
@@ -85,7 +85,7 @@ gulp.task('compile-test-typescript', function () {
 });
 
 gulp.task('build-distribution', function () {
-    return gulp.src(['./src/package.json', './README.md', './app/**/*.js', '!./app/karma.angular2.shim.js', './**/*.ts', '!./**/spec*.ts', '!./node_modules/', '!./node_modules/**', '!./typings/', '!./typings/**'])
+    return gulp.src(['./src/package.json', './README.md', './app/**/*.js', './src/ts/**/*.ts', '!./**/spec*.ts', '!./node_modules/', '!./node_modules/**', '!./typings/', '!./typings/**'])
         .pipe(gulp.dest('distro'));
 });
 
