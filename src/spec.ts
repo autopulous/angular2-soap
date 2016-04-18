@@ -94,15 +94,15 @@ function envelopeBuilder(requestBody:string):string {
 }
 
 function executeLogin(soapService:SoapService, username:string, password:string) {
-    var parameters:{}[] = [];
+    var parameters:any = {};
 
     parameters[requestRoot + ' xmlns="urn:vertexinc:enterprise:platform:security:messages:1:0"'] = executeLoginRequest(username, password);
 
     soapService.post(method, parameters, responseRoot);
 }
 
-function executeLoginRequest(username, password):{}[] {
-    var parameters:{}[] = [];
+function executeLoginRequest(username:string, password:string):{}[] {
+    var parameters:any = {};
 
     parameters['RequestContext xmlns="urn:vertexinc:enterprise:platform:common:1:0"'] = requestContext();
     parameters['UserLogin xmlns="urn:vertexinc:enterprise:platform:security:1:0"'] = userLogin(username, password);
@@ -111,7 +111,7 @@ function executeLoginRequest(username, password):{}[] {
 }
 
 function requestContext():{}[] {
-    var parameters:{}[] = [];
+    var parameters:any = {};
 
     parameters["AsOfDate"] = todayString();
     parameters['ApplicationName'] = 'VE';
@@ -122,8 +122,8 @@ function requestContext():{}[] {
     return parameters;
 }
 
-function userLogin(username, password):{}[] {
-    var parameters:{}[] = [];
+function userLogin(username:string, password:string):{}[] {
+    var parameters:any = {};
 
     parameters["UserName"] = username;
     parameters['Password'] = password;
@@ -135,7 +135,7 @@ function todayString():string {
     return dateString(new Date());
 }
 
-function dateString(date):string {
+function dateString(date:Date):string {
     var yyyy:string = date.getFullYear() + '';
 
     var month:number = date.getMonth() + 1;

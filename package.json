@@ -1,6 +1,6 @@
 {
   "name": "autopulous-angular2-soap",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Angular 2 SOAP client service",
   "repository": {
     "type": "git",
@@ -10,8 +10,8 @@
   "private": false,
   "dependencies": {
     "angular2": "2.0.0-beta.14",
-    "autopulous-xdom": "0.0.5",
-    "autopulous-xdom2jso": "0.0.8",
+    "autopulous-xdom": "latest",
+    "autopulous-xdom2jso": "latest",
     "es6-promise": "3.1.2",
     "es6-shim": "0.35.0",
     "reflect-metadata": "0.1.2",
@@ -36,7 +36,6 @@
     "karma-jasmine": "0.3.8",
     "karma-spec-reporter": "0.0.26",
     "lite-server": "2.2.0",
-    "ntypescript": "1.201604120006.1",
     "postcss": "5.0.19",
     "postcss-scss": "0.1.7",
     "precss": "^1.3.0",

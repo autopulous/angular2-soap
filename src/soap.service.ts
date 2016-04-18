@@ -1,5 +1,5 @@
 /// <reference path="../node_modules/angular2/typings/browser.d.ts"/>
-/// <reference path="../node_modules/autopulous-xdom2jso/src/xdom2jso.ts"/>
+/// <reference path="../node_modules/autopulous-xdom2jso/xdom2jso.ts"/>
 
 import convert = xdom2jso.convert;
 
@@ -114,7 +114,7 @@ export class SoapService {
         xmlHttp.send(envelopedRequest);
     }
 
-    private toXml(parameters):string {
+    private toXml(parameters:any):string {
         var xml:string = "";
         var parameter:any;
 
@@ -180,7 +180,7 @@ export class SoapService {
                                 }
                                 xml += this.toElement(type, parameters[parameter]);
                             }
-                            else {    // associative array
+                            else { // associative array
                                 xml += this.toElement(parameter, parameters[parameter]);
                             }
                         }
@@ -202,20 +202,20 @@ export class SoapService {
         return xml;
     }
 
-    private toElement(elementName, parameters):string {
+    private toElement(tagNamePotentiallyWithAttributes:string, parameters:any):string {
         var elementContent:string = this.toXml(parameters);
 
         if ("" == elementContent) {
-            return "<" + elementName + "/>";
+            return "<" + tagNamePotentiallyWithAttributes + "/>";
         }
         else {
-            return "<" + elementName + ">" + elementContent + "</" + SoapService.stripTagAttributes(elementName) + ">";
+            return "<" + tagNamePotentiallyWithAttributes + ">" + elementContent + "</" + SoapService.stripTagAttributes(tagNamePotentiallyWithAttributes) + ">";
         }
     }
 
-    private static stripTagAttributes(parameter):string {
-        var attributedParameter:string = parameter + ' ';
+    private static stripTagAttributes(tagNamePotentiallyWithAttributes:string):string {
+        tagNamePotentiallyWithAttributes = tagNamePotentiallyWithAttributes + ' ';
 
-        return attributedParameter.slice(0, attributedParameter.indexOf(' '));
+        return tagNamePotentiallyWithAttributes.slice(0, tagNamePotentiallyWithAttributes.indexOf(' '));
     }
 }

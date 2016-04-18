@@ -58,7 +58,7 @@ gulp.task('copy-test-javascript', function () {
 
 gulp.task('compile-typescript', function () {
     var typescript = require('gulp-typescript');
-    var typescriptCompiler = typescript({typescript: require('ntypescript')});
+    var typescriptCompiler = typescript({typescript: require('typescript')});
     var typescriptProject = typescript(typescript.createProject('tsconfig.json'));
     var sourcemaps = require('gulp-sourcemaps');
 
@@ -73,7 +73,7 @@ gulp.task('compile-typescript', function () {
 gulp.task('compile-test-typescript', function () {
     var sourcemaps = require('gulp-sourcemaps');
     var typescript = require('gulp-typescript');
-    var typescriptCompiler = typescript({typescript: require('ntypescript')});
+    var typescriptCompiler = typescript({typescript: require('typescript')});
     var typescriptProject = typescript(typescript.createProject('tsconfig.json'));
 
     return gulp.src('./src/**/spec*.ts')
