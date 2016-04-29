@@ -95,7 +95,7 @@ export class SoapService {
                 }
 
                 if (null != this.jsoResponseHandler_) {
-                    var response:{} = convert(responseNodeList[0]);
+                    var response:{} = convert(responseNodeList[0], this.localName);
 
                     if (this.debug) {
                         console.log(JSON.stringify(response));
