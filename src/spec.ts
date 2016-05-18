@@ -1,7 +1,6 @@
-/// <reference path="../../node_modules/angular2/typings/browser.d.ts"/>
-/// <reference path="../../typings/main/ambient/jasmine/jasmine.d.ts"/>
+///<reference path="../node_modules/angular2-in-memory-web-api/typings/browser.d.ts"/>
 
-import {it, describe, expect, beforeEach, beforeEachProviders, inject, injectAsync} from 'angular2/testing';
+import {it, describe, expect, beforeEach, beforeEachProviders, inject, injectAsync} from '@angular/core/testing';
 
 import {SoapService} from "./soap.service";
 
@@ -146,5 +145,3 @@ function dateString(date:Date):string {
 
     return yyyy + '-' + mm + '-' + dd;
 }
-
-// https://github.com/mgechev/angular2-seed

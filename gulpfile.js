@@ -1,3 +1,5 @@
+'use strict';
+
 var gulp = require('gulp');
 var runSequence = require('run-sequence');
 var del = require('del');
@@ -51,48 +53,51 @@ gulp.task('copy-javascript', function () {
         .pipe(gulp.dest('./app/'));
 });
 
-gulp.task('copy-test-javascript', function () {
-    return gulp.src('./src/**/spec*.js')
-        .pipe(gulp.dest('./app/'));
-});
+var map = '../map/';
+var app = './app/';
 
 gulp.task('compile-typescript', function () {
-    var typescript = require('gulp-typescript');
-    var typescriptCompiler = typescript({typescript: require('ntypescript')});
-    var typescriptProject = typescript(typescript.createProject('tsconfig.json'));
     var sourcemaps = require('gulp-sourcemaps');
+    var typescript = require('gulp-typescript');
+    var merge = require('merge2');
 
-    return gulp.src(['!./src/ts/**/spec*.ts', './src/ts/**/*.ts'])
-        .pipe(typescriptProject)
-        .pipe(sourcemaps.init())
-        .pipe(sourcemaps.write('../map/'))
-        .pipe(gulp.dest('./app/'))
-        .pipe(typescriptCompiler);
+    var debug = require('gulp-debug');
+
+    var src = gulp.src(['./src/**/*.ts', '!./src/**/spec*.ts']);
+    var dst = gulp.dest(app);
+
+    var jsMap = src.pipe(typescript(typescript.createProject('tsconfig.json')))
+                   .pipe(sourcemaps.init())
+                   .pipe(sourcemaps.write(map));
+
+    var dts = src.pipe(typescript(typescript.createProject('tsconfig.json')));
+
+    return merge([
+        jsMap.pipe(dst),   // writes .js and .map files
+        dts.dts.pipe(dst)  // writes .d.ts files
+    ]);
 });
 
 gulp.task('compile-test-typescript', function () {
     var sourcemaps = require('gulp-sourcemaps');
     var typescript = require('gulp-typescript');
-    var typescriptCompiler = typescript({typescript: require('ntypescript')});
-    var typescriptProject = typescript(typescript.createProject('tsconfig.json'));
 
-    return gulp.src('./src/ts/**/spec*.ts')
-        .pipe(typescriptProject)
+    return gulp.src(['./src/**/spec*.ts'])
+        .pipe(typescript(typescript.createProject('tsconfig.json')))
         .pipe(sourcemaps.init())
-        .pipe(sourcemaps.write('../map/'))
-        .pipe(gulp.dest('./app/'))
-        .pipe(typescriptCompiler);
+        .pipe(sourcemaps.write(map))
+        .pipe(gulp.dest(app));
 });
 
 gulp.task('build-distribution', function () {
-    return gulp.src(['./src/package.json', './README.md', './app/**/*.js', './src/ts/**/*.ts', '!./**/spec*.ts', '!./node_modules/', '!./node_modules/**', '!./typings/', '!./typings/**'])
+    return gulp.src(['./src/package.json', './README.md', './app/**/*.js', './app/**/*.d.ts', '!./app/**/*.shim.js', '!./node_modules/', '!./node_modules/**', '!./typings/', '!./typings/**'])
         .pipe(gulp.dest('distro'));
 });
 
 // Do not automatically perform a CLEAN when building the tests because Karma tends to gets stuck after files that it is monitoring are deleted
 
 gulp.task('BUILD-TESTS', function () {
-    runSequence('compile-typescript', ['copy-images', 'compile-css', 'copy-html', 'copy-javascript'], 'compile-test-typescript', 'copy-test-javascript');
+    runSequence('compile-typescript', ['copy-images', 'compile-css', 'copy-html', 'copy-javascript'], 'compile-test-typescript');
 });
 
 gulp.task('BUILD-CLEAN-APPLICATION', function () {

@@ -1,9 +1,9 @@
-/// <reference path="../../node_modules/angular2/typings/browser.d.ts"/>
-/// <reference path="../../node_modules/autopulous-xdom2jso/xdom2jso.ts"/>
+/// <reference path="../node_modules/angular2-in-memory-web-api/typings/browser.d.ts"/>
+/// <reference path="../node_modules/autopulous-xdom2jso/xdom2jso.d.ts"/>
 
 import convert = xdom2jso.convert;
 
-import {Injectable} from 'angular2/core';
+import {Injectable} from '@angular/core';
 
 @Injectable()
 export class SoapService {
