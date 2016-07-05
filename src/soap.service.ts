@@ -1,4 +1,3 @@
-/// <reference path="../node_modules/angular2-in-memory-web-api/typings/browser.d.ts"/>
 /// <reference path="../node_modules/autopulous-xdom2jso/xdom2jso.d.ts"/>
 
 import convert = xdom2jso.convert;
@@ -8,7 +7,7 @@ import {Injectable} from '@angular/core';
 @Injectable()
 export class SoapService {
     private debug:boolean = false;
-    private asynchronous:boolean = false;
+    private asynchronous:boolean = true;
     private localName:boolean = false;
 
     private servicePort:string = '';

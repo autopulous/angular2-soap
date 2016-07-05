@@ -31,7 +31,7 @@ a callback function to build the SOAP request envelope
 ### `jsoResponseHandler`
 property `(response:{}) => void`
  
-a callback function to asynchronously consume the JavaScript webservice response
+a callback function to receive the JavaScript webservice response object (https://github.com/autopulous/xdom2jso.git)
 ### `xmlResponseHandler` 
 property `(response:NodeListOf<Element>) => void`
 
@@ -64,8 +64,9 @@ the body of the webservice request
 optional argument `string`
  
 the starting `ELEMENT` within the XML webservice response from which to convert into the JavaScript response object
+## Usage Notes
+* By default `autopulous-angular2-soap` processes SOAP responses asynchronously (this behavior is overridden by setting `testMode`)
 
-**Note:** uses `autopulous-xdom2jso` to convert XML responses to JavaScript objects (https://github.com/autopulous/xdom2jso.git) 
 ## Example
 An Angular 2 service to make SOAP requests and process SOAP responses.
 

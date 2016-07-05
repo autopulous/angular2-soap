@@ -17,13 +17,13 @@ module.exports = function (config) {
             {pattern: 'node_modules/autopulous-xdom/xdom.js', included: true, watched: false},
             {pattern: 'node_modules/autopulous-xdom2jso/xdom2jso.js', included: true, watched: false},
 
-            {pattern: 'app/systemjs.config.js', included: true, watched: false},
+            {pattern: 'dist/systemjs.config.js', included: true, watched: false},
 
             // shim
-            {pattern: 'app/karma.@angular.shim.js', included: true, watched: false},
+            {pattern: 'dist/karma.@angular.shim.js', included: true, watched: false},
 
             // paths loaded via module imports
-            {pattern: 'app/**/*.js', served: true, included: false, watched: true},
+            {pattern: 'dist/**/*.js', served: true, included: false, watched: true},
 
             // paths to support debugging with source maps in dev tools
             {pattern: 'src/**/*.ts', included: false, watched: false},
@@ -33,7 +33,7 @@ module.exports = function (config) {
         // proxied base paths
         proxies: {
             // required for component assets fetched by Angular
-            '/node_modules/': '/base/node_modules/'
+            '/vendor/': '/base/node_modules/'
         },
 
         autoWatch: true,

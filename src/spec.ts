@@ -1,6 +1,4 @@
-///<reference path="../node_modules/angular2-in-memory-web-api/typings/browser.d.ts"/>
-
-import {it, describe, expect, beforeEach, beforeEachProviders, inject, injectAsync} from '@angular/core/testing';
+import {it, describe, expect, beforeEach, beforeEachProviders, inject} from '@angular/core/testing';
 
 import {SoapService} from "./soap.service";
 
