@@ -10,7 +10,7 @@
     "noImplicitAny": true,
     "declaration": true,
     "sourceMap": true,
-    "mapRoot": "map/",
+    "mapRoot": "./",
     "diagnostics": true
   },
   "exclude": [

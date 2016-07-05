@@ -91,12 +91,7 @@ gulp.task ('copy-html', function () {
 });
 
 gulp.task ('copy-javascript', function () {
-    return gulp.src ([src + '/**/*.js', '!' + src + '/karma.@angular.shim.js'])
-    .pipe (gulp.dest (dist + '/'));
-});
-
-gulp.task ('copy-karma-shim', function () {
-    return gulp.src ([src + '/karma.@angular.shim.js'])
+    return gulp.src ([src + '/**/*.js', '!' + src + '/karma.@angular.shim.js', '!' + src + '/systemjs.config.js'])
     .pipe (gulp.dest (dist + '/'));
 });
 
@@ -109,45 +104,24 @@ gulp.task ('copy-images', function () {
 });
 
 gulp.task ('copy-metadata', function () {
-    return gulp.src (['package.json', 'README.md'])
+    return gulp.src (['./src/package.json', 'README.md'])
     .pipe (gulp.dest (dist + '/'));
 });
 
 /* this task must be updated to correspond to the package.json for the third-party packages (node_modules) to include in the application distribution (vendor) */
 
 gulp.task ('copy-vendor', function () {
-    gulp.src ([node + '/@angular/**/*.js'])
-    .pipe (gulp.dest (vendor + '/@angular'));
-
-    gulp.src ([node + '/angular2-in-memory-web-api/**/*.js'])
-    .pipe (gulp.dest (vendor + '/angular2-in-memory-web-api'));
-
-    gulp.src ([node + '/es6-shim/es6-shim.min.js'])
-    .pipe (gulp.dest (vendor + '/es6-shim'));
-
-    gulp.src ([node + '/reflect-metadata/**/*.js'])
-    .pipe (gulp.dest (vendor + '/reflect-metadata'));
-
-    gulp.src ([node + '/rxjs/**/*.js'])
-    .pipe (gulp.dest (vendor + '/rxjs'));
-
-    gulp.src ([node + '/systemjs/**/*.js'])
-    .pipe (gulp.dest (vendor + '/systemjs'));
-
-    gulp.src ([node + '/zone.js/**/*.js'])
-    .pipe (gulp.dest (vendor + '/zone.js'));
-
-    gulp.src ([node + '/autopulous-xdom/**/*.js'])
+    gulp.src ([node + '/autopulous-xdom/**/*.+(js|d.ts)'])
     .pipe (gulp.dest (vendor + '/autopulous-xdom'));
 
-    return gulp.src ([node + '/autopulous-xdom2jso/**/*.js'])
+    return gulp.src ([node + '/autopulous-xdom2jso/**/*.+(js|d.ts)'])
     .pipe (gulp.dest (vendor + '/autopulous-xdom2jso'));
 });
 
 // Do not automatically perform a 'clean' when rebuilding the tests because Karma tends to gets stuck when files that it is monitoring are deleted
 
 gulp.task ('rebuild-test', function () {
-    runSequence ('compile-modules-with-maps', 'compile-tests', 'compile-css-with-maps', ['copy-html', 'copy-javascript', 'copy-karma-shim', 'copy-images']);
+    runSequence ('compile-modules-with-maps', 'compile-tests', 'compile-css-with-maps', ['copy-html', 'copy-javascript', 'copy-images']);
 });
 
 gulp.task ('watch-dev', function () {

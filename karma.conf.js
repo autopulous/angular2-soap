@@ -17,10 +17,10 @@ module.exports = function (config) {
             {pattern: 'node_modules/autopulous-xdom/xdom.js', included: true, watched: false},
             {pattern: 'node_modules/autopulous-xdom2jso/xdom2jso.js', included: true, watched: false},
 
-            {pattern: 'dist/systemjs.config.js', included: true, watched: false},
+            {pattern: 'src/systemjs.config.js', included: true, watched: false},
 
             // shim
-            {pattern: 'dist/karma.@angular.shim.js', included: true, watched: false},
+            {pattern: 'src/karma.@angular.shim.js', included: true, watched: false},
 
             // paths loaded via module imports
             {pattern: 'dist/**/*.js', served: true, included: false, watched: true},
