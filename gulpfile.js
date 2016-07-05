@@ -66,40 +66,8 @@ gulp.task ('compile-typings', function () {
     .pipe (gulp.dest (dist + '/'));
 });
 
-gulp.task ('compile-css', function () {
-    var sass = require ('gulp-sass');
-
-    return gulp.src (src + '/**/*.scss')
-    .pipe (sass ())
-    .pipe (gulp.dest (dist + '/'));
-});
-
-gulp.task ('compile-css-with-maps', function () {
-    var sass = require ('gulp-sass');
-    var sourcemaps = require ('gulp-sourcemaps');
-
-    return gulp.src (src + '/**/*.scss')
-    .pipe (sourcemaps.init ())
-    .pipe (sass ())
-    .pipe (sourcemaps.write ('./'))
-    .pipe (gulp.dest (dist + '/'));
-});
-
-gulp.task ('copy-html', function () {
-    return gulp.src (src + '/**/*.html')
-    .pipe (gulp.dest (dist + '/'));
-});
-
 gulp.task ('copy-javascript', function () {
     return gulp.src ([src + '/**/*.js', '!' + src + '/karma.@angular.shim.js', '!' + src + '/systemjs.config.js'])
-    .pipe (gulp.dest (dist + '/'));
-});
-
-gulp.task ('copy-images', function () {
-    var imagemin = require ('gulp-imagemin');
-
-    return gulp.src (src + '/**/*.+(ico|gif|jpg|jpeg|png)')
-    .pipe (imagemin ({ progressive: true }))
     .pipe (gulp.dest (dist + '/'));
 });
 
@@ -111,10 +79,10 @@ gulp.task ('copy-metadata', function () {
 /* this task must be updated to correspond to the package.json for the third-party packages (node_modules) to include in the application distribution (vendor) */
 
 gulp.task ('copy-vendor', function () {
-    gulp.src ([node + '/autopulous-xdom/**/*.+(js|d.ts)'])
+    gulp.src ([node + '/autopulous-xdom/**/*.js'])
     .pipe (gulp.dest (vendor + '/autopulous-xdom'));
 
-    return gulp.src ([node + '/autopulous-xdom2jso/**/*.+(js|d.ts)'])
+    return gulp.src ([node + '/autopulous-xdom2jso/**/*.js'])
     .pipe (gulp.dest (vendor + '/autopulous-xdom2jso'));
 });
 

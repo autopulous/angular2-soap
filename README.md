@@ -68,7 +68,9 @@ the starting `ELEMENT` within the XML webservice response from which to convert 
 * By default `autopulous-angular2-soap` processes SOAP responses asynchronously (this behavior is overridden by setting `testMode`)
 
 ## Example
-An Angular 2 service to make SOAP requests and process SOAP responses.
+A user authentication service to make SOAP requests and process SOAP responses.
+
+`user.authenticator.ts`
 
     import {Component} from "@angular/core";
     import {SoapService} from "../soap.service";
@@ -121,20 +123,68 @@ An Angular 2 service to make SOAP requests and process SOAP responses.
 
         private envelopeBuilder(requestBody:string):string {
             return "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-                       "<SOAP-ENV:Header>" +
-                           "<wsse:Security SOAP-ENV:mustUnderstand=\"1\" xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" soapenv =\"http://schemas.xmlsoap.org/soap/envelope/\">" +
-                           "<wsse:UsernameToken wsu:ld=\"UsernameToken-104\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" >" +
-                           "<wsse:Username>" + this.username + "</wsse:Username>" +
-                           "<wsse:Password Type=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText\">" + this.password + "</wsse:Password>" +
-                           "</wsse:UsernameToken>" +
-                           "</wsse:Security>" +
-                       "</SOAP-ENV:Header>" +
-                       "<SOAP-ENV:Body>" +
-                           requestBody +
-                       "</SOAP-ENV:Body>" +
-                   "</SOAP-ENV:Envelope>";
+                   "<SOAP-ENV:Header>" +
+                   "<wsse:Security SOAP-ENV:mustUnderstand=\"1\" xmlns:wsse=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd\" soapenv =\"http://schemas.xmlsoap.org/soap/envelope/\">" +
+                   "<wsse:UsernameToken wsu:ld=\"UsernameToken-104\" xmlns:wsu=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd\" >" +
+                    "<wsse:Username>" + this.username + "</wsse:Username>" +
+                    "<wsse:Password Type=\"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText\">" + this.password + "</wsse:Password>" +
+                    "</wsse:UsernameToken>" +
+                    "</wsse:Security>" +
+                    "</SOAP-ENV:Header>" +
+                    "<SOAP-ENV:Body>" +
+                    requestBody +
+                    "</SOAP-ENV:Body>" +
+                    "</SOAP-ENV:Envelope>";
         }
     }
+    
+`index.html`
+
+Load module dependencies `autopulous-xdom` and `autopulous-xdom2jso`
+
+    <!DOCTYPE html>
+    <html>
+        <head>
+            ... 
+                 
+            <script src="vendor/autopulous-angular2-soap/vendor/autopulous-xdom/xdom.js"></script>
+            <script src="vendor/autopulous-angular2-soap/vendor/autopulous-xdom2jso/xdom2jso.js"></script>
+            
+            ...
+        </head>
+        <body>
+            ...
+        </body>
+    </html>
+    
+`systemjs.config.js`
+
+Configure SystemJS to load `autopulous-angular2-soap`
+    
+    'use strict';
+    
+    System.config ({
+        // tell the SystemJS loader where to look for packages and components
+    
+        map: {
+            ...
+            
+            'autopulous-angular2-soap': 'vendor/autopulous-angular2-soap',
+            
+            ...
+        },
+    
+        // tell the SystemJS loader how to load when no filename and/or no extension
+    
+        packages: {
+            ...
+                
+            'autopulous-angular2-soap': { defaultExtension: 'js' },
+            
+            ...
+        }
+    });
+    
 ## Usage
 1: Clone the Git repository
 
