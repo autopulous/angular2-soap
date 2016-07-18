@@ -1,6 +1,6 @@
 # Angular 2 SOAP client service
 ## Description
-`autopulous-angular2-soap` is a module to make SOAP requests and reveive SOAP responses as a JavaScript object (JSO).
+`autopulous-angular2-soap` is a module to make SOAP requests and receive SOAP responses as a JavaScript object (JSO).
 ## License
 The MIT License (MIT)
 
@@ -185,13 +185,20 @@ Configure SystemJS to load `autopulous-angular2-soap`
         }
     });
     
-## Usage
-1: Clone the Git repository
+## To modify/customize this package within your development environment
+1: Clone the `Git` repository
 
     git clone https://github.com/autopulous/angular2-soap.git
 2: Install packages (from the command line)
     
     npm install
-3: Start server (includes gulp watcher and auto refresh)
+3: Start build/test servers (from the command line) (invokes `Gulp` watcher and `Karma` auto refresh)
 
-    npm start
+    npm run "unit test continuously"
+3a: Alternatively: create/use your preferred build/test methodology to automate the development process
+
+## To include this package within your project
+1: Within your project's `package.json` file include the Angular2 SOAP client within the `dependencies` section
+
+    "autopulous-angular2-soap": "0.4.7"
+2: Implement calls to the package as illustrated in the example code (above)
